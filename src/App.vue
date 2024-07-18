@@ -75,7 +75,7 @@ function downloadFile(file) {
             <li class="font-bold">Asunto: <span class="font-normal truncate">{{ email.subject }}</span></li>
             <li class="font-bold">De: <span class="font-normal">{{ email.from.name }}</span></li>
             <li class="font-bold">Para: <span class="font-normal" v-for="recipient in email.to">{{ recipient.name }}</span></li>
-            <li class="font-bold">Fecha: <span class="font-normal">{{ new Date(email.date).toLocaleString() }}</span></li>
+            <li class="font-bold">Fecha: <span class="font-normal">{{ new Date(email.date).toDateString() }} - {{ new Date(email.date).toLocaleTimeString() }}</span></li>
           </ul>
 
         </div>
@@ -87,7 +87,7 @@ function downloadFile(file) {
           <li class="font-bold">Asunto: <span class="font-normal">{{selectedEmail.subject}}</span></li>
           <li class="font-bold">De: <span class="font-normal">{{selectedEmail.from.name}} - {{ selectedEmail.from.address }}</span></li>
           <li class="font-bold">Para: <span class="font-normal" v-for="recipient in selectedEmail.to">{{recipient.name}} - {{ recipient.address }}</span></li>
-          <li class="font-bold">Fecha: <span class="font-normal">{{new Date(selectedEmail.date).toLocaleString()}}</span></li>
+          <li class="font-bold">Fecha: <span class="font-normal">{{ new Date(email.date).toDateString() }} - {{ new Date(email.date).toLocaleTimeString() }}</span></li>
           <li class="font-bold" v-if="selectedEmail.attachments.length">Archivos Adjuntos:
             <div class="flex mt-4">
               <span v-for="file in selectedEmail.attachments" @click="downloadFile(file)" class="bg-neutral-100 flex hover:bg-neutral-200 rounded-lg px-3 py-2 mr-2 cursor-pointer">
