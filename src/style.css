@@ -1,0 +1,6 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.EmailRows li { @apply px-3 py-2 border-b border-b-neutral-200 last:border-b-0; }
