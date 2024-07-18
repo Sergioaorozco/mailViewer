@@ -66,7 +66,7 @@ function downloadFile(file) {
         <p>Total Emails: {{ totalEmails }} </p>
       </div>
       <div class="flex flex-col">
-        <div @click="selectEmail(email, index)" :class="{selectedEmail === renderedEmail[index] ? 'bg-emerald-700 text-white hover:bg-emerald-800' : 'bg-neutral-50 hover:bg-neutral-200'}" class="flex gap-x-4 py-4 px-2 items-start text-sm border border-neutral-200 cursor-pointer" v-for="(email, index) in renderedEmail" :key="email.date">
+        <div @click="selectEmail(email, index)" :class="{selectedEmail === renderedEmail[index] ? '!bg-emerald-700 text-white hover:!bg-emerald-600' : 'bg-neutral-50 hover:bg-neutral-200'}" class="flex gap-x-4 py-4 px-2 items-start text-sm border border-neutral-200 cursor-pointer" v-for="(email, index) in renderedEmail" :key="email.date">
           <figure class="flex flex-col gap-y-2 justify-center items-center">
             <img width="40px" height="40px" src="./assets/mailIcon.svg" alt="Icon " class="bg-emerald-200 rounded-full p-2">
             <img width="40px" height="40px" v-if="email.attachments.length" src="./assets/paperClip.svg" alt="Icon " class="bg-yellow-200 rounded-full p-2">
