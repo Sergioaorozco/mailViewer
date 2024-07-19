@@ -4,3 +4,7 @@
 
 
 .EmailRows li { @apply px-3 py-2 border-b border-b-neutral-200 last:border-b-0; }
+
+.emailMBox {
+    @apply w-full p-4 rounded-lg bg-neutral-100 border border-neutral-200 flex justify-center items-center;
+}

@@ -9,7 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@primevue/themes": "^4.0.0",
     "postal-mime": "^2.2.6",
+    "primevue": "^4.0.0",
     "vue": "^3.4.31"
   },
   "devDependencies": {
