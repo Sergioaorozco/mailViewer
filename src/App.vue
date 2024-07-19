@@ -81,14 +81,14 @@ function downloadFile(file) {
 </div> 
   </div>
   <main class="flex px-12 gap-x-2 my-5" v-if="renderedEmail[0]">
-    <section class="w-1/3 px-2 ">
+    <section class="w-1/3 px-2">
       <div class="w-full bg-emerald-300 py-2 px-3 rounded-t-lg">
         <p>Total Emails: {{ totalEmails }} </p>
       </div>
-      <div class="flex flex-col ">
-        <div @click="selectEmail(email, index)"
+      <ul class="flex flex-col border border-neutral-200 overflow-y-auto h-full">
+        <li @click="selectEmail(email, index)"
           :class="selectedEmail === renderedEmail[index] ? '!bg-emerald-700 text-white hover:!bg-emerald-600' : 'bg-neutral-50 hover:bg-neutral-200'"
-          class="flex gap-x-4 py-4 px-2 items-start text-sm border border-neutral-200 cursor-pointer"
+          class="flex gap-x-4 py-4 px-2 items-start text-sm cursor-pointer border-b last:border-b-0 border-b-neutral-200"
           v-for="(email, index) in renderedEmail" :key="email.date">
           <figure class="flex flex-col gap-y-2 justify-center items-center">
             <img width="40px" height="40px" src="./assets/mailIcon.svg" alt="Icon "
@@ -97,18 +97,17 @@ function downloadFile(file) {
               class="bg-yellow-200 rounded-full p-2">
           </figure>
           <ul class="w-4/5 overflow-hidden">
-            <li class="font-bold">Asunto: <span class="font-normal truncate">{{ email.subject }}</span></li>
+            <li class="font-bold">Asunto: <span class="font-normal block truncate">{{ email.subject }}</span></li>
             <li class="font-bold">De: <span class="font-normal">{{ email.from.name }}</span></li>
             <li class="font-bold">Para: <span class="font-normal" v-for="recipient in email.to">{{ recipient.name
                 }}</span></li>
             <li class="font-bold">Fecha: <span class="font-normal">{{ new Date(email.date).toDateString() }} - {{ new
                 Date(email.date).toLocaleTimeString() }}</span></li>
           </ul>
-
-        </div>
-      </div>
+        </li>
+      </ul>
     </section>
-    <section class="w-10/12" v-if="selectedEmail">
+    <section class="w-10/12 sticky top-2 h-screen" v-if="selectedEmail">
       <div class="border border-neutral-200 rounded-lg">
         <ul class="EmailRows py-2">
           <li class="font-bold">Asunto: <span class="font-normal">{{selectedEmail.subject}}</span></li>
@@ -129,7 +128,9 @@ function downloadFile(file) {
           </li>
         </ul>
       </div>
-      <iframe class="mt-3 h-full border w-full border-neutral-200 rounded-lg" v-if="selectedEmail" :srcdoc="selectedEmail.html"></iframe>
+      <div class="h-full">
+        <iframe class="mt-3 border w-full border-neutral-200 rounded-lg h-full" v-if="selectedEmail" :srcdoc="selectedEmail.html"></iframe>
+      </div>
     </section>
   </main>
 </template>
