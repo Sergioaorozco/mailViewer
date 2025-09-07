@@ -1,26 +1,60 @@
 <script setup>
-import { FileUpload } from 'primevue';
+import { ref, computed } from 'vue'
+import { FileUpload } from 'primevue'
+import PostalMime from 'postal-mime'
+
+const parsedEmails = ref([]);
+const error = ref(null);
+let hasEmails = computed(() => parsedEmails.value.length > 0);
+
+const handleUpload = async ({files}) => {
+  const file = files?.[0]
+  if (!file) return
+  if (!file.name.endsWith('.mbox')) {
+    error.value = 'Please upload a valid .mbox file.'
+    return
+  }
+
+  const mboxText = await file.text()
+  const rawMessages = mboxText.split(/\nFrom .*\r?\n/).filter(Boolean)
+
+  const out = []
+  for (const raw of rawMessages) {
+    try {
+      const email = await PostalMime.parse(raw);
+      out.push({
+        subject: email.subject || '',
+        from: email.from?.text || '',
+        to: email.to?.text || '',
+        date: email.date || '',
+        text: email.text || '',
+        html: email.html || '',
+        attachments: email.attachments || []
+      })
+    } catch (e) {
+      console.error('PostalMime parse error:', e)
+    }
+  }
+  parsedEmails.value = out
+  console.log(parsedEmails.value);
+}
 </script>
 
 <template>
-  <div class="p-4 md:p-8">
-    <header class="mb-6">
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Local Mbox Email Viewer</h1>
-      <p class="text-gray-600 mt-1 dark:text-neutral-200">
-        Upload and view emails from `.mbox` files directly in your browser. All processing is done locally.
-      </p>
-    </header>
+  <FileUpload auto customUpload @uploader="handleUpload" />
+  <div v-if="error" class="error">{{ error }}</div>
 
-    <FileUpload auto customUpload></FileUpload>
-    <img v-if="role" src="/src/assets/mailIcon.svg" alt="Image" class="shadow-md rounded-xl w-full sm:w-64"/>
-
-    <!-- Upload -->
-    <!-- Search bar -->
-    <!-- Iframe -->
-  </div>
+  <!-- Display Emails  -->
+  <section class="flex" v-if="hasEmails">
+     <article class="w-1/3 p-5 rounded-lg overflow-clip" >
+      <ul class="rounded-lg overflow-clip border">
+        <li class="bg-zinc-100 hover:bg-zinc-300 dark:bg-zinc-900 dark:hover:bg-zinc-800 px-3 py-2 border-b-zinc-300 dark:border-b-zinc-800 border-b last:border-none" v-for="email in parsedEmails">
+          {{ email.subject }}
+        </li>
+      </ul>
+     </article>
+     <article class="w-2/3">
+      <iframe src="" class="w-full h-full" frameborder="0"></iframe>
+     </article>
+  </section>
 </template>
-
-<style scoped>
-
-
-</style>
