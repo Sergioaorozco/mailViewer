@@ -79,11 +79,11 @@ const handleUpload = async ({ files }) => {
     <span class="ml-3 text-blue-600 dark:text-blue-300">Parsing emails...</span>
   </div>
 
-  <section v-if="hasEmails && !isLoading">
-    <input type="text" placeholder="Search emails..." class="mb-4 p-2 border rounded w-full" />
+  <section class="p-5" v-if="hasEmails && !isLoading">
     <div class="flex">
-      <article class="w-1/3 p-5 rounded-lg overflow-clip">
-        <ul class="rounded-lg overflow-clip border">
+      <article class="w-1/3">
+        <input type="text" placeholder="Search emails..." class="mb-4 p-2 w-full rounded" />
+        <ul class="rounded-lg overflow-clip border border-zinc-300 dark:border-zinc-800">
           <li
             v-for="email in parsedEmails"
             :key="email.subject + email.date"
