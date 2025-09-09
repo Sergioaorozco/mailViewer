@@ -7,4 +7,9 @@ export default defineConfig({
     include: ['postal-mime'], // Explicitly include if needed
   },
   plugins: [vue()],
+  resolve: {
+    alias: {
+      "@": "/src"
+    }
+  }
 })
