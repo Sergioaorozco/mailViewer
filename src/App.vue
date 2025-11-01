@@ -1,17 +1,40 @@
 <script setup>
-import EmailViewer from '@/components/EmailViewer.vue';
-import GlobalLoader from '@/components/GlobalLoader.vue';
-import { Upload, Mail } from 'lucide-vue-next';
-import { ref, computed } from 'vue';
+import EmailViewer from '@/components/EmailViewer.vue'
+import { Upload, Mail } from 'lucide-vue-next'
+import { ref, computed } from 'vue'
 import PostalMime from 'postal-mime'
 
 const parsedEmails = ref([])
 const error = ref(null)
-const isLoading = ref(false);
+const isDragging = ref(false)
+const hasEmails = computed(() => parsedEmails.value.length > 0)
 
-const hasEmails = computed(() => parsedEmails?.value.length > 0);
+// ✅ Always convert to Uint8Array before parsing
+const parseEmailChunk = async (raw) => {
+  try {
+    const data =
+      raw instanceof Uint8Array
+        ? raw
+        : new TextEncoder().encode(typeof raw === 'string' ? raw : String(raw ?? ''))
+    return await PostalMime.parse(data)
+  } catch (err) {
+    console.error('PostalMime parse error:', err)
+    return null
+  }
+}
 
-const handleUpload = async ({ files }) => {
+// ✅ Normalize data for EmailViewer
+const mapEmailData = (email) => ({
+  subject: email?.subject || '(No Subject)',
+  from: email?.from?.text || 'Unknown Sender',
+  to: email?.to?.text || 'Unknown Recipient',
+  date: email?.date || '',
+  text: email?.text || '',
+  html: email?.html || '',
+  attachments: email?.attachments || [],
+})
+
+const handleUpload = async (files) => {
   const file = files?.[0]
   if (!file) return
   if (!file.name.endsWith('.mbox')) {
@@ -20,50 +43,28 @@ const handleUpload = async ({ files }) => {
   }
 
   error.value = null
-  isLoading.value = true
   parsedEmails.value = []
 
-  const reader = file.stream().getReader()
-  const decoder = new TextDecoder('utf-8')
-  let buffer = ''
+  const text = await file.text()
+  const parts = text.split(/\r?\nFrom\s/)
 
-  while (true) {
-    const { done, value } = await reader.read()
-    if (done) break
+  for (const raw of parts) {
+    const trimmed = raw?.trim?.()
+    if (!trimmed) continue
 
-    buffer += decoder.decode(value, { stream: true })
+    const emailText = `From ${trimmed}`
+    const email = await parseEmailChunk(emailText)
+    if (!email) continue
 
-    const parts = buffer.split(/\r?\nFrom\s/);
-    buffer = parts.pop() // keep last incomplete message
-
-    for(const raw of parts) {
-      try {
-        const email = await PostalMime.parse(raw);
-        parsedEmails.value.push({
-          subject: email.subject || '',
-          from: email.from?.text || '',
-          to: email.to?.text || '',
-          date: email.date || '',
-          text: email.text || '',
-          html: email.html || '',
-          attachments: email.attachments || []
-        })
-      } catch (e) {
-        console.error('PostalMime parse error:', e)
-      }
-    }
+    parsedEmails.value.push(mapEmailData(email))
   }
+}
 
-  // parse leftover buffer
-  if (buffer.trim()) {
-    try {
-      const email = await PostalMime.parse(buffer)
-      parsedEmails.value.push(email)
-    } catch (e) {
-      console.error('PostalMime parse error (leftover):', e)
-    }
-  }
-  isLoading.value = false;
+const handleFileChange = (e) => handleUpload(e.target.files)
+const handleDrop = (e) => {
+  e.preventDefault()
+  isDragging.value = false
+  handleUpload(e.dataTransfer.files)
 }
 </script>
 
@@ -79,13 +80,32 @@ const handleUpload = async ({ files }) => {
       </div>
     </section>
     <section
-      class="flex flex-col justify-center items-center gap-y-4 border-2 border-dashed hover:border-zinc-700 transition-colors duration-200 hover:bg-yellow-50 group rounded-lg p-8">
-      <i class="flex p-3 rounded-full bg-zinc-200 group-hover:bg-yellow-200 transition-colors duration-150">
-        <Upload class="text-zinc-500 group-hover:text-yellow-800" />
+      @dragover.prevent="isDragging = true"
+      @dragleave.prevent="isDragging = false"
+      @drop="handleDrop"
+      :class="isDragging ? 'border-yellow-700 bg-yellow-50' : 'border-zinc-300 hover:border-yellow-700 hover:bg-yellow-50'"
+      class="flex flex-col justify-center items-center gap-y-4 border-2 border-dashed transition-colors duration-200 group rounded-lg p-8">
+      <i
+        :class="isDragging ? 'bg-yellow-200' : 'bg-zinc-200'"
+        class="flex p-3 rounded-full bg-zinc-200 group-hover:bg-yellow-200 transition-colors duration-150">
+        <Upload
+        :class="isDragging ? 'text-yellow-800': 'text-zinc-500'"
+         class="text-zinc-500 group-hover:text-yellow-800" />
       </i>
       <h2 class="text-zinc-800 font-bold text-xl mb-2">Cargar Archivo .Mbox</h2>
       <p class="text-zinc-500 text-pretty text-center">Arrastra y suelta tu archivo aquí o haz clic para seleccionar</p>
       <div v-if="error" class="error">{{ error }}</div>
+      <label
+        class="inline-flex items-center justify-center gap-2 hover:bg-yellow-800 duration-300 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-zinc-800 text-white hover:bg-zinc/90 h-10 px-4 py-2 cursor-pointer"><svg
+          xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide lucide-file-text w-4 h-4" aria-hidden="true">
+          <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
+          <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
+          <path d="M10 9H8"></path>
+          <path d="M16 13H8"></path>
+          <path d="M16 17H8"></path>
+        </svg>Seleccionar archivo<input type="file" accept=".mbox" class="hidden" @change="handleFileChange"></label>
     </section>
     <section>
       <div class="mt-6 p-4 bg-zinc-100 rounded-lg">
@@ -99,7 +119,8 @@ const handleUpload = async ({ files }) => {
           </svg>
           <div class="text-sm">
             <p class="font-medium mb-2">¿Qué son los archivos .mbox?</p>
-            <p class="text-muted-foreground text-pretty">Los archivos .mbox son una forma estándar de almacenar múltiples mensajes
+            <p class="text-muted-foreground text-pretty">Los archivos .mbox son una forma estándar de almacenar
+              múltiples mensajes
               de correo electrónico en un solo archivo. Puedes exportar tus emails desde la mayoría de clientes de
               correo (Gmail, Thunderbird, Outlook, etc.) en este formato.</p>
           </div>

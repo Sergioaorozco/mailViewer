@@ -3,12 +3,13 @@
 import { computed, ref } from 'vue';
 
 // Props
-const props = defineProps([
+const props = defineProps(
   {emails: {
     type: Array,
-    default: []
+    default: [],
+    required: true,
   }}
-])
+)
 
 // References
 const selectedEmail = ref({})
