@@ -68,7 +68,7 @@ const donwloadAttachment = ( attachment) => {
   </section>
   <section class="p-5">
     <div class="flex gap-x-3 h-[calc(100vh-120px)]">
-      <article class="w-1/3 rounded-lg overflow-clip border border-zinc-300">
+      <article class="w-1/3 flex flex-col rounded-lg border border-zinc-300">
         <div class="border-b border-zinc-200">
           <div class="relative"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -109,7 +109,13 @@ const donwloadAttachment = ( attachment) => {
             </li>
           </ul>
         </div>
-        <iframe v-if="selectedEmail" :srcdoc="selectedEmail.html" class="w-full h-full" frameborder="0"></iframe>
+        <div v-if="selectedEmail">
+          <iframe :srcdoc="selectedEmail.html" class="w-full h-full" frameborder="0"></iframe>
+        </div>
+        <div v-else class="flex justify-center items-center w-full h-full">
+          <Mail class="size-9"></Mail>
+          <p>Selecciona un email para ver su contenido</p>
+        </div>
       </article>
     </div>
   </section>
