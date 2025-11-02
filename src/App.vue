@@ -4,10 +4,11 @@ import { Upload, Mail } from 'lucide-vue-next'
 import { ref, computed } from 'vue'
 import PostalMime from 'postal-mime'
 
-const parsedEmails = ref([])
-const error = ref(null)
-const isDragging = ref(false)
-const hasEmails = computed(() => parsedEmails.value.length > 0)
+const parsedEmails = ref([]);
+const error = ref(null);
+const isDragging = ref(false);
+const hasEmails = computed(() => parsedEmails.value.length > 0);
+const uploadedFilename = ref(null);
 
 // ✅ Always convert to Uint8Array before parsing
 const parseEmailChunk = async (raw) => {
@@ -43,6 +44,7 @@ const handleUpload = async (files) => {
   }
 
   error.value = null
+  uploadedFilename.value = file.name
   parsedEmails.value = []
 
   const text = await file.text()
@@ -128,5 +130,5 @@ const handleDrop = (e) => {
       </div>
     </section>
   </main>
-  <EmailViewer v-else :emails="parsedEmails" />
+  <EmailViewer v-else :emails="parsedEmails" :uploadedFilename="uploadedFilename" />
 </template>
