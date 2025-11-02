@@ -49,7 +49,9 @@ const donwloadAttachment = ( attachment) => {
 <template>
   <section class="p-5 flex gap-x-3 text-xl justify-between items-center">
     <div class="flex gap-x-2 items-center">
-      <Mail class="size-9"></Mail>
+      <i class="size-14 flex items-center justify-center bg-zinc-200 text-zinc-700 rounded-full">
+        <Mail class="size-8"></Mail>
+      </i>
       <span class="leading-none">
         <h1>Email Viewer</h1>
         <h2 class="text-zinc-600 font-light">{{ uploadedFilename }}</h2>
@@ -109,12 +111,10 @@ const donwloadAttachment = ( attachment) => {
             </li>
           </ul>
         </div>
-        <div v-if="selectedEmail">
-          <iframe :srcdoc="selectedEmail.html" class="w-full h-full" frameborder="0"></iframe>
-        </div>
-        <div v-else class="flex justify-center items-center w-full h-full">
-          <Mail class="size-9"></Mail>
-          <p>Selecciona un email para ver su contenido</p>
+        <iframe v-if="selectedEmail.subject" :srcdoc="selectedEmail.html" class="w-full h-full" frameborder="0"></iframe>
+        <div v-else class="flex flex-col justify-center items-center w-full h-full text-zinc-400">
+          <Mail class="size-14"></Mail>
+          <p class="text-zinc-600">Selecciona un email para ver su contenido</p>
         </div>
       </article>
     </div>
