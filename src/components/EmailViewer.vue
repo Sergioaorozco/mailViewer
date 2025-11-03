@@ -86,32 +86,65 @@ const donwloadAttachment = ( attachment) => {
         <ul class="flex-1 overflow-y-auto">
           <li v-for="email in emails" :key="email.subject + email.date" @click="selectedEmail = email"
             class="bg-white hover:bg-zinc-100 px-3 py-2 min-h-20 border-b border-zinc-300 last:border-none">
-            <span class="flex items-start gap-x-3">
-              <p class="p-3 rounded-full size-10 flex justify-center items-center bg-zinc-200">SA</p>
-              <p> {{ email.subject }}</p>
-            </span>
+            <div class="flex justify-between items-start gap-x-3">
+              <div class="flex gap-x-2">
+                <p class="p-3 rounded-full size-10 flex justify-center items-center bg-zinc-200">SA</p>
+                <span class="flex flex-col">
+                  <p class="font-semibold"> {{ email.from }}</p>
+                  <p class="text-zinc-600 text-sm overflow-ellipsis"> {{ email.subject }}</p>
+                </span>
+              </div>
+              <div class="flex items-center gap-1 text-xs text-zinc-500 whitespace-nowrap"><svg xmlns="http://www.w3.org/2000/svg"
+                  width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar w-4 h-4"
+                  aria-hidden="true">
+                  <path d="M8 2v4"></path>
+                  <path d="M16 2v4"></path>
+                  <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                  <path d="M3 10h18"></path>
+                </svg><span>{{ new Date(email.date).toLocaleDateString('es-ES') }}</span>
+              </div>
+            </div>
           </li>
         </ul>
       </article>
-      <article class="w-2/3 border border-zinc-20- rounded-lg overflow-clip">
-        <div class="border-b border-zinc-200 p-4 mb-4 bg-white" v-if="selectedEmail.subject">
-          <p>{{ selectedEmail.subject }}</p>
-          <p>From: {{ selectedEmail.from }}</p>
-          <p>To: {{ selectedEmail.to }}</p>
-          <p>Date: {{ new Date(selectedEmail.date).toLocaleDateString() }}</p>
-          <ul>
-            <li>Attachments:</li>
-            <li class="flex gap-x-3" v-for="file in selectedEmail.attachments">
-              <button class="flex gap-x-3 px-3 py-2 rounded-md bg-zinc-100" @click="donwloadAttachment">
-                <i>
-                  <PaperClipIcon />
-                </i>
-                {{file.filename}}
-              </button>
-            </li>
-          </ul>
+      <article class="w-2/3 border border-zinc-300 rounded-lg overflow-clip">
+        <div class="border-b border-zinc-200 px-4 pt-4 pb-8 bg-white" v-if="selectedEmail.subject">
+          <p class="text-xl font-semibold">{{ selectedEmail.subject }}</p>
+          <div class="flex items-start gap-x-3 mt-2">
+            <p class="p-3 rounded-full size-10 flex justify-center items-center bg-zinc-200 mt-1">SA</p>
+            <div class="flex-col w-full">
+              <div class="flex justify-between items-start w-full">
+                <span>
+                  <p>From: {{ selectedEmail.from }}</p>
+                  <p class="text-zinc-500">{{ selectedEmail.to }}</p>
+                </span>
+                <div class="flex items-center self-start gap-1 text-sm text-zinc-500"><svg xmlns="http://www.w3.org/2000/svg"
+                    width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar w-4 h-4"
+                    aria-hidden="true">
+                    <path d="M8 2v4"></path>
+                    <path d="M16 2v4"></path>
+                    <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                    <path d="M3 10h18"></path>
+                  </svg><span>{{ new Date(selectedEmail.date).toLocaleDateString('es-ES') }}</span>
+                </div>
+              </div>
+              <ul v-if="selectedEmail.attachments.length" class="flex gap-x-2 text-sm mt-3 flex-wrap gap-2">
+                <li class="flex gap-x-3" v-for="file in selectedEmail.attachments">
+                  <button class="flex gap-x-3 px-3 py-2 rounded-md bg-zinc-100" @click="donwloadAttachment">
+                    <i>
+                      <PaperClipIcon />
+                    </i>
+                    {{file.filename}}
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
-        <iframe v-if="selectedEmail.subject" :srcdoc="selectedEmail.html" class="w-full h-full" frameborder="0"></iframe>
+        <iframe v-if="selectedEmail.subject" :srcdoc="selectedEmail.html" class="w-full h-full"
+          frameborder="0"></iframe>
         <div v-else class="flex flex-col justify-center items-center w-full h-full text-zinc-400">
           <Mail class="size-14"></Mail>
           <p class="text-zinc-600">Selecciona un email para ver su contenido</p>
