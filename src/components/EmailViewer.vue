@@ -53,6 +53,7 @@ const donwloadAttachment = ( attachment) => {
 }
 
 const showFilteredEmails = computed(() => {
+  selectedEmail.value = {};
   if(!filterText.value) return props.emails;
   return props.emails.filter(email => 
     email.subject.toLowerCase().includes(filterText.value.toLowerCase()) ||
