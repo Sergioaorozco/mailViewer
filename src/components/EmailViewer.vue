@@ -35,24 +35,78 @@ const clearFilter = () => {
   filterText.value = '';
 }
 
-const donwloadAttachment = ( attachment) => {
+const donwloadAttachment = (attachmentOrEvent) => {
   try {
-    const blob = new Blob([attachment.content], { type: attachment.mimeType});
-    // Create a temporary URL for the blob
-    const url = URL.createObjectURL(blob);
+    // If the handler was called without passing the attachment, it may receive the click event.
+    // Guard against that by checking for a `filename` or `content` property.
+    const attachment = (attachmentOrEvent && attachmentOrEvent.filename) ? attachmentOrEvent : null;
+    if (!attachment) {
+      console.error('No attachment provided to donwloadAttachment')
+      return
+    }
 
-    // Temporary link element
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = attachment.filename || 'attachment';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    let content = attachment.content
+    let blob
 
-    // Clean up the temporary URL to free memory
-    URL.revokeObjectURL(url);
+    // Normalize several possible shapes for attachment content
+    if (content instanceof Uint8Array) {
+      blob = new Blob([content], { type: attachment.mimeType || 'application/octet-stream' })
+    } else if (content instanceof ArrayBuffer) {
+      blob = new Blob([new Uint8Array(content)], { type: attachment.mimeType || 'application/octet-stream' })
+    } else if (typeof content === 'string') {
+      // If it looks like base64, decode it first
+      const isBase64 = /^[A-Za-z0-9+/=\r\n]+$/.test(content) && content.length % 4 === 0
+      if (isBase64) {
+        // strip newlines then decode
+        const cleaned = content.replace(/\r|\n/g, '')
+        const binary = atob(cleaned)
+        const len = binary.length
+        const bytes = new Uint8Array(len)
+        for (let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i)
+        blob = new Blob([bytes], { type: attachment.mimeType || 'application/octet-stream' })
+      } else {
+        // treat as text
+        blob = new Blob([content], { type: attachment.mimeType || 'text/plain' })
+      }
+    } else if (content && Array.isArray(content.data)) {
+      // Node-style Buffer emulation: { type: 'Buffer', data: [...] }
+      const bytes = new Uint8Array(content.data)
+      blob = new Blob([bytes], { type: attachment.mimeType || 'application/octet-stream' })
+    } else if (content && Array.isArray(content)) {
+      // raw array of bytes
+      const bytes = new Uint8Array(content)
+      blob = new Blob([bytes], { type: attachment.mimeType || 'application/octet-stream' })
+    } else {
+      // Fallback: stringify
+      blob = new Blob([String(content || '')], { type: attachment.mimeType || 'text/plain' })
+    }
+
+    // Ensure filename has an extension when possible
+    let filename = attachment.filename || 'attachment'
+    // If filename lacks a dot and we have a mimeType, try to map a simple extension
+    if (!filename.includes('.') && attachment.mimeType) {
+      const mimeMap = {
+        'application/pdf': '.pdf',
+        'image/png': '.png',
+        'image/jpeg': '.jpg',
+        'text/html': '.html',
+        'text/plain': '.txt',
+        'application/zip': '.zip'
+      }
+      const ext = mimeMap[attachment.mimeType]
+      if (ext) filename = filename + ext
+    }
+
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = filename
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
   } catch (e) {
-    console.error('An error download the attachtment');
+    console.error('Error downloading attachment', e)
   }
 }
 
@@ -234,7 +288,7 @@ const formatDate = (date)  =>{
               </span>
               <ul v-if="selectedEmail.attachments.length" class="flex gap-x-2 text-sm mt-3 flex-wrap gap-2">
                 <li class="flex gap-x-3" v-for="file in selectedEmail.attachments">
-                  <button class="flex gap-x-3 px-3 py-2 rounded-md bg-zinc-100" @click="donwloadAttachment">
+                  <button class="flex gap-x-3 px-3 py-2 rounded-md bg-zinc-100" @click="donwloadAttachment(file)">
                     <i>
                       <PaperClipIcon />
                     </i>
