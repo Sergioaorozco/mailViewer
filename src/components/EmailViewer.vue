@@ -16,11 +16,14 @@ const props = defineProps({
     default: '',
     required: false,
   }
-}
-)
+});
+
+// Emits
+const emit = defineEmits(['reset-emails']);
 
 // References
 const selectedEmail = ref({})
+const filterText = defineModel();
 
 // Methods
 const donwloadAttachment = ( attachment) => {
@@ -43,6 +46,15 @@ const donwloadAttachment = ( attachment) => {
     console.error('An error download the attachtment');
   }
 }
+
+const showFilteredEmails = computed(() => {
+  if(!filterText.value) return props.emails;
+  return props.emails.filter(email => 
+    email.subject.toLowerCase().includes(filterText.value.toLowerCase()) ||
+    email.fromAddress.toLowerCase().includes(filterText.value.toLowerCase()) ||
+    email.fromName.toLowerCase().includes(filterText.value.toLowerCase())
+  )
+});
 
 </script>
 
@@ -79,13 +91,16 @@ const donwloadAttachment = ( attachment) => {
               aria-hidden="true">
               <path d="m21 21-4.34-4.34"></path>
               <circle cx="11" cy="11" r="8"></circle>
-            </svg><input placeholder="Buscar emails..."
+            </svg>
+            <input
               class="flex h-16 w-full rounded-md px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-10 pr-10"
-              value="">
+              placeholder="Buscar emails..."
+              v-model="filterText"
+            >
           </div>
         </div>
         <ul class="flex-1 overflow-y-auto">
-          <li v-for="email in emails" :key="email.subject + email.date" @click="selectedEmail = email"
+          <li v-for="email in showFilteredEmails" :key="email.subject + email.date" @click="selectedEmail = email"
             class="bg-white hover:bg-zinc-100 px-3 py-2 min-h-20 border-b border-zinc-300 last:border-none cursor-pointer">
             <div class="flex justify-between items-start gap-x-3">
               <div class="flex gap-x-2">
