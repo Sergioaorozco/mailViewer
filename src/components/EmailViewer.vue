@@ -3,7 +3,6 @@
 import { computed, ref } from 'vue';
 import { Mail } from 'lucide-vue-next';
 import PaperClipIcon from '../assets/PaperClipIcon.vue';
-import { filter } from '@primeuix/themes/aura/datatable';
 
 // Props
 const props = defineProps({
@@ -54,8 +53,9 @@ const donwloadAttachment = ( attachment) => {
 
 const showFilteredEmails = computed(() => {
   selectedEmail.value = {};
-  if(!filterText.value) return props.emails;
-  return props.emails.filter(email => 
+  const orderEmails = props.emails.sort((a,b) => new Date(b.date) - new Date(a.date));
+  if(!filterText.value) return orderEmails;
+  return orderEmails.filter(email => 
     email.subject.toLowerCase().includes(filterText.value.toLowerCase()) ||
     email.fromAddress.toLowerCase().includes(filterText.value.toLowerCase()) ||
     email.fromName.toLowerCase().includes(filterText.value.toLowerCase())
@@ -135,11 +135,11 @@ const formatDate = (date)  =>{
           </li>
           <li v-for="email in showFilteredEmails" :key="email.subject + email.date" @click="selectedEmail = email"
             class="bg-white hover:bg-zinc-100 px-3 py-2 min-h-20 border-b group border-zinc-300 last:border-none cursor-pointer"
-            :class="selectedEmail.emailID === email.emailID ? 'bg-yellow-100 hover:bg-yellow-200' : ''"
+            :class="selectedEmail.emailID === email.emailID ? 'bg-yellow-50 hover:bg-yellow-100' : ''"
           >
             <div class="flex justify-between items-start gap-x-3">
               <div class="flex gap-x-2">
-                <p :class="[selectedEmail.emailID === email.emailID ? 'bg-yellow-400 group-hover:bg-yellow-500': '','p-3 rounded-full size-10 flex justify-center items-center bg-zinc-200']">{{email.initialChars}}
+                <p :class="[selectedEmail.emailID === email.emailID ? 'bg-yellow-300 group-hover:bg-yellow-400': '','p-3 rounded-full size-10 flex justify-center items-center bg-zinc-200']">{{email.initialChars}}
                 </p>
                 <span class="flex flex-col">
                   <p class="font-semibold"> {{ email.fromName }}</p>
