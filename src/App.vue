@@ -30,7 +30,7 @@ const mapEmailData = (email) => ({
   to: [...email?.to] || 'Unknown Recipient',
   fromName: email?.from?.name || 'Unknown Sender',
   fromAddress: email?.from?.address || 'Unknown Sender',
-  // Including two chars initials from senders name.
+  emailID: email?.messageId || '',
   initialChars: formatChars(email?.from?.name),
   date: email?.date || '',
   text: email?.text || '',

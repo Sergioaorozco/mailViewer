@@ -119,7 +119,7 @@ const formatDate = (date)  =>{
             </svg>
             <input
               class="flex h-16 w-full rounded-md px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-10 pr-10"
-              placeholder="Buscar emails..." v-model="filterText">
+              placeholder="Buscar emails..." v-model="filterText" type="text" autocomplete="false">
           </div>
         </div>
         <ul class="flex-1 overflow-y-auto">
@@ -134,10 +134,12 @@ const formatDate = (date)  =>{
             No se encontraron emails que coincidan con "{{ filterText }}"
           </li>
           <li v-for="email in showFilteredEmails" :key="email.subject + email.date" @click="selectedEmail = email"
-            class="bg-white hover:bg-zinc-100 px-3 py-2 min-h-20 border-b border-zinc-300 last:border-none cursor-pointer">
+            class="bg-white hover:bg-zinc-100 px-3 py-2 min-h-20 border-b group border-zinc-300 last:border-none cursor-pointer"
+            :class="selectedEmail.emailID === email.emailID ? 'bg-yellow-100 hover:bg-yellow-200' : ''"
+          >
             <div class="flex justify-between items-start gap-x-3">
               <div class="flex gap-x-2">
-                <p class="p-3 rounded-full size-10 flex justify-center items-center bg-zinc-200">{{email.initialChars}}
+                <p :class="[selectedEmail.emailID === email.emailID ? 'bg-yellow-400 group-hover:bg-yellow-500': '','p-3 rounded-full size-10 flex justify-center items-center bg-zinc-200']">{{email.initialChars}}
                 </p>
                 <span class="flex flex-col">
                   <p class="font-semibold"> {{ email.fromName }}</p>
