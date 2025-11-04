@@ -61,6 +61,18 @@ const showFilteredEmails = computed(() => {
   )
 });
 
+const formatDate = (date)  =>{
+  if(!date) return 'Invalid Date';
+
+  const dateToString = new Date(date).toLocaleDateString('es-ES', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+
+  return dateToString;
+}
+
 </script>
 
 <template>
@@ -139,7 +151,7 @@ const showFilteredEmails = computed(() => {
                   <path d="M16 2v4"></path>
                   <rect width="18" height="18" x="3" y="4" rx="2"></rect>
                   <path d="M3 10h18"></path>
-                </svg><span>{{ new Date(email.date).toLocaleDateString('es-ES') }}</span>
+                </svg><span>{{ formatDate(email.date) }}</span>
               </div>
             </div>
           </li>
@@ -165,7 +177,7 @@ const showFilteredEmails = computed(() => {
                     <path d="M16 2v4"></path>
                     <rect width="18" height="18" x="3" y="4" rx="2"></rect>
                     <path d="M3 10h18"></path>
-                  </svg><span>{{ new Date(selectedEmail.date).toLocaleDateString('es-ES') }}</span>
+                  </svg><span>{{ formatDate(selectedEmail.date) }}</span>
                 </div>
               </div>
               <ul v-if="selectedEmail.attachments.length" class="flex gap-x-2 text-sm mt-3 flex-wrap gap-2">
