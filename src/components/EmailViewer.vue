@@ -164,7 +164,7 @@ const formatDate = (date)  =>{
         <div class="border-b border-zinc-200 px-4 pt-4 pb-8 bg-white" v-if="selectedEmail.subject">
           <p class="text-xl font-semibold">{{ selectedEmail.subject }}</p>
           <div class="flex items-start gap-x-3 mt-2">
-            <p class="p-3 rounded-full size-10 flex justify-center items-center bg-zinc-200 mt-1">
+            <p class="p-3 rounded-full size-10 flex justify-center items-center bg-yellow-300 mt-1">
               {{selectedEmail.initialChars}}</p>
             <div class="flex-col w-full">
               <div class="flex justify-between items-start w-full">
