@@ -84,7 +84,7 @@ const formatDate = (date)  =>{
       </i>
       <span class="leading-none">
         <h1>Email Viewer</h1>
-        <h2 class="text-zinc-600 font-light">{{ uploadedFilename }}</h2>
+        <h2 class="text-zinc-600 font-light text-lg">{{ uploadedFilename }}</h2>
       </span>
     </div>
     <button @click="$emit('reset-emails')"
@@ -139,7 +139,7 @@ const formatDate = (date)  =>{
           >
             <div class="flex justify-between items-start gap-x-3">
               <div class="flex gap-x-2">
-                <p :class="[selectedEmail.emailID === email.emailID ? 'bg-yellow-300 group-hover:bg-yellow-400': 'bg-zinc-200','p-3 rounded-full size-10 flex justify-center items-center']">{{email.initialChars}}
+                <p :class="[selectedEmail.emailID === email.emailID ? 'bg-yellow-300 group-hover:bg-yellow-400': 'bg-zinc-200','p-3 rounded-full aspect-square size-10 flex justify-center items-center']">{{email.initialChars}}
                 </p>
                 <span class="flex flex-col">
                   <p class="font-semibold"> {{ email.fromName }}</p>
@@ -164,8 +164,9 @@ const formatDate = (date)  =>{
         <div class="border-b border-zinc-200 px-4 pt-4 pb-8 bg-white" v-if="selectedEmail.subject">
           <p class="text-xl font-semibold">{{ selectedEmail.subject }}</p>
           <div class="flex items-start gap-x-3 mt-2">
-            <p class="p-3 rounded-full size-10 flex justify-center items-center bg-yellow-300 mt-1">
-              {{selectedEmail.initialChars}}</p>
+            <p class="p-3 rounded-full aspect-square size-10 flex justify-center items-center bg-yellow-300 mt-1">
+              {{selectedEmail.initialChars}}
+            </p>
             <div class="flex-col w-full">
               <div class="flex justify-between items-start w-full">
                 <span>
