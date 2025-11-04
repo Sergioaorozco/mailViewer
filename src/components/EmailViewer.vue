@@ -1,6 +1,6 @@
 <script setup>
 // Dependencies
-import { computed, ref } from 'vue';
+import { computed, ref, onBeforeUnmount } from 'vue';
 import { Mail } from 'lucide-vue-next';
 import PaperClipIcon from '../assets/PaperClipIcon.vue';
 
@@ -56,15 +56,43 @@ const donwloadAttachment = ( attachment) => {
   }
 }
 
+let debounceTimer = null
+let lastValue = ''
+const versionRef = ref(0)
+
+const debouncedFilter = computed(() => {
+  // create dependency on versionRef so we can trigger recompute when timer fires
+  void versionRef.value
+
+  // schedule/update timer whenever filterText changes
+  if (debounceTimer) clearTimeout(debounceTimer)
+  const current = (filterText.value || '').trim()
+  debounceTimer = setTimeout(() => {
+    lastValue = current
+    versionRef.value++
+    debounceTimer = null
+  }, 150)
+
+  // Return the last settled value (initially empty)
+  return lastValue
+})
+
+onBeforeUnmount(() => {
+  if (debounceTimer) clearTimeout(debounceTimer)
+})
+
 const showFilteredEmails = computed(() => {
   const orderEmails = props.emails.slice().sort((a,b) => new Date(b.date) - new Date(a.date));
-  if(!filterText.value) return orderEmails;
-  return orderEmails.filter(email => 
-    email.subject.toLowerCase().includes(filterText.value.toLowerCase()) ||
-    email.fromAddress.toLowerCase().includes(filterText.value.toLowerCase()) ||
-    email.fromName.toLowerCase().includes(filterText.value.toLowerCase())
-  )
-});
+  const q = (debouncedFilter.value || '').toLowerCase()
+  if (!q) return orderEmails
+  return orderEmails.filter(email => {
+    return (
+      (email.subject || '').toLowerCase().includes(q) ||
+      (email.fromAddress || '').toLowerCase().includes(q) ||
+      (email.fromName || '').toLowerCase().includes(q)
+    )
+  })
+})
 
 // Helper to avoid rendering broken/incomplete HTML in the iframe
 const isHtmlComplete = (html) => {
