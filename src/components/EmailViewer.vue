@@ -119,7 +119,7 @@ const formatDate = (date)  =>{
 <template>
   <section class="p-5 flex gap-x-3 text-xl justify-between items-center">
     <div class="flex gap-x-2 items-center">
-      <i class="size-14 flex items-center justify-center bg-zinc-200 text-zinc-700 rounded-full">
+      <i class="size-14 flex items-center justify-center bg-zinc-200 text-zinc-600 rounded-full">
         <Mail class="size-8"></Mail>
       </i>
       <span class="leading-none">
