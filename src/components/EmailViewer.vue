@@ -134,8 +134,8 @@ const formatDate = (date)  =>{
             No se encontraron emails que coincidan con "{{ filterText }}"
           </li>
           <li v-for="email in showFilteredEmails" :key="email.subject + email.date" @click="selectedEmail = email"
-            class="bg-white hover:bg-zinc-100 px-3 py-2 min-h-20 border-b group border-zinc-300 last:border-none cursor-pointer"
-            :class="selectedEmail.emailID === email.emailID ? 'bg-yellow-50 hover:bg-yellow-100' : ''"
+            class="px-3 py-2 min-h-20 border-b group border-zinc-300 last:border-none cursor-pointer"
+            :class="selectedEmail.emailID === email.emailID ? 'bg-yellow-50 hover:bg-yellow-100' : 'bg-white hover:bg-zinc-100'"
           >
             <div class="flex justify-between items-start gap-x-3">
               <div class="flex gap-x-2">
