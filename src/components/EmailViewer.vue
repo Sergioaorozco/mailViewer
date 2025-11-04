@@ -140,18 +140,19 @@ const formatDate = (date)  =>{
   </section>
   <section class="p-5">
     <div class="flex gap-x-3 h-[calc(100vh-120px)]">
-  <article class="w-1/3 flex flex-col rounded-lg border border-zinc-300 relative">
+      <article class="w-1/3 flex flex-col rounded-lg border border-zinc-300 relative">
         <div class="border-b border-zinc-200">
           <div class="relative">
-            <svg v-if="!filterText" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            <svg v-if="!filterText" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
               class="lucide lucide-search absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground"
               aria-hidden="true">
               <path d="m21 21-4.34-4.34"></path>
               <circle cx="11" cy="11" r="8"></circle>
             </svg>
-            <svg v-else @click="clearFilter" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            <svg v-else @click="clearFilter" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round"
               class="icon icon-tabler icons-tabler-outline icon-tabler-x absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 cursor-pointer">
               <path stroke="none" d="M0 0h24v24H0z" fill="none" />
               <path d="M18 6l-12 12" />
@@ -175,11 +176,12 @@ const formatDate = (date)  =>{
           </li>
           <li v-for="email in showFilteredEmails" :key="email.subject + email.date" @click="selectedEmail = email"
             class="px-3 py-2 min-h-20 border-b group border-zinc-300 last:border-none cursor-pointer"
-            :class="selectedEmail.emailID === email.emailID ? 'bg-yellow-50 hover:bg-yellow-100' : 'bg-white hover:bg-zinc-100'"
-          >
+            :class="selectedEmail.emailID === email.emailID ? 'bg-yellow-50 hover:bg-yellow-100' : 'bg-white hover:bg-zinc-100'">
             <div class="flex justify-between items-start gap-x-3">
               <div class="flex gap-x-2">
-                <p :class="[selectedEmail.emailID === email.emailID ? 'bg-yellow-300 group-hover:bg-yellow-400': 'bg-zinc-200','p-3 rounded-full aspect-square size-10 flex justify-center items-center']">{{email.initialChars}}
+                <p
+                  :class="[selectedEmail.emailID === email.emailID ? 'bg-yellow-300 group-hover:bg-yellow-400': 'bg-zinc-200','p-3 rounded-full aspect-square size-10 flex justify-center items-center']">
+                  {{email.initialChars}}
                 </p>
                 <span class="flex flex-col">
                   <p class="font-semibold flex gap-x-2 items-start"> {{ email.fromName }}</p>
@@ -197,7 +199,9 @@ const formatDate = (date)  =>{
                     <path d="M3 10h18"></path>
                   </svg><span>{{ formatDate(email.date) }}</span>
                 </div>
-                <span v-if="email.attachments.length > 0" class=" w-fit flex text-xs text-zinc-600/50 p-1"><PaperClipIcon /> {{ email.attachments.length }}</span>
+                <span v-if="email.attachments.length > 0" class=" w-fit flex text-xs text-zinc-600/50 p-1">
+                  <PaperClipIcon /> {{ email.attachments.length }}
+                </span>
               </div>
             </div>
           </li>
@@ -205,28 +209,29 @@ const formatDate = (date)  =>{
       </article>
       <article class="w-2/3 border border-zinc-300 rounded-lg overflow-clip">
         <div class="border-b border-zinc-200 px-4 pt-4 pb-8 bg-white" v-if="selectedEmail.subject">
-          <p class="text-xl font-semibold">{{ selectedEmail.subject }}</p>
+          <div class="flex justify-between items-start">
+            <p class="text-xl font-semibold">{{ selectedEmail.subject }}</p>
+            <div class="flex items-center self-start gap-1 text-sm text-zinc-500">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-calendar w-4 h-4" aria-hidden="true">
+                <path d="M8 2v4"></path>
+                <path d="M16 2v4"></path>
+                <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                <path d="M3 10h18"></path>
+              </svg>
+              <span>{{ formatDate(selectedEmail.date) }}</span>
+            </div>
+          </div>
           <div class="flex items-start gap-x-3 mt-2">
             <p class="p-3 rounded-full aspect-square size-10 flex justify-center items-center bg-yellow-300 mt-1">
               {{selectedEmail.initialChars}}
             </p>
             <div class="flex-col w-full">
-              <div class="flex justify-between items-start w-full">
-                <span>
-                  <p>{{ selectedEmail.fromName }}</p>
-                  <p class="text-zinc-500">{{ selectedEmail.fromAddress }}</p>
-                </span>
-                <div class="flex items-center self-start gap-1 text-sm text-zinc-500"><svg
-                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="lucide lucide-calendar w-4 h-4" aria-hidden="true">
-                    <path d="M8 2v4"></path>
-                    <path d="M16 2v4"></path>
-                    <rect width="18" height="18" x="3" y="4" rx="2"></rect>
-                    <path d="M3 10h18"></path>
-                  </svg><span>{{ formatDate(selectedEmail.date) }}</span>
-                </div>
-              </div>
+              <span>
+                <p>{{ selectedEmail.fromName }}</p>
+                <p class="text-zinc-500">{{ selectedEmail.fromAddress }}</p>
+              </span>
               <ul v-if="selectedEmail.attachments.length" class="flex gap-x-2 text-sm mt-3 flex-wrap gap-2">
                 <li class="flex gap-x-3" v-for="file in selectedEmail.attachments">
                   <button class="flex gap-x-3 px-3 py-2 rounded-md bg-zinc-100" @click="donwloadAttachment">
@@ -242,12 +247,8 @@ const formatDate = (date)  =>{
         </div>
         <!-- Preview pane: only render iframe when HTML looks complete to avoid partial/meta parsing errors -->
         <template v-if="selectedEmail.subject">
-          <iframe
-            v-if="isHtmlComplete(selectedEmail.html)"
-            :srcdoc="selectedEmail.html"
-            class="w-full h-full"
-            frameborder="0"
-          ></iframe>
+          <iframe v-if="isHtmlComplete(selectedEmail.html)" :srcdoc="selectedEmail.html" class="w-full h-full"
+            frameborder="0"></iframe>
 
           <!-- If HTML isn't complete yet, show a fallback: plain text or a loading hint -->
           <div v-else class="w-full h-full p-6 overflow-auto text-zinc-700">
