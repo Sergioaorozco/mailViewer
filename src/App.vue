@@ -27,13 +27,27 @@ const parseEmailChunk = async (raw) => {
 // ✅ Normalize data for EmailViewer
 const mapEmailData = (email) => ({
   subject: email?.subject || '(No Subject)',
-  from: email?.from?.text || 'Unknown Sender',
-  to: email?.to?.text || 'Unknown Recipient',
+  to: [...email?.to] || 'Unknown Recipient',
+  fromName: email?.from?.name || 'Unknown Sender',
+  fromAddress: email?.from?.address || 'Unknown Sender',
+  // Including two chars initials from senders name.
+  initialChars: formatChars(email?.from?.name),
   date: email?.date || '',
   text: email?.text || '',
   html: email?.html || '',
   attachments: email?.attachments || [],
 })
+
+
+const formatChars = (name) => {
+  if(!name) return 'NA';
+  const splittedName = name.trim().split(' ');
+
+  return splittedName.length === 1
+    ? splittedName[0].substring(0,2).toUpperCase()
+    : splittedName[0][0] + splittedName[1][0].toUpperCase();
+}
+
 
 const handleUpload = async (files) => {
   const file = files?.[0]
@@ -56,7 +70,7 @@ const handleUpload = async (files) => {
 
     const emailText = `From ${trimmed}`
     const email = await parseEmailChunk(emailText)
-    if (!email) continue
+    if (!email) continue;
 
     parsedEmails.value.push(mapEmailData(email))
   }
@@ -67,6 +81,11 @@ const handleDrop = (e) => {
   e.preventDefault()
   isDragging.value = false
   handleUpload(e.dataTransfer.files)
+}
+
+const resetViewer = () => {
+  parsedEmails.value = []
+  uploadedFilename.value = null
 }
 </script>
 
@@ -130,5 +149,5 @@ const handleDrop = (e) => {
       </div>
     </section>
   </main>
-  <EmailViewer v-else :emails="parsedEmails" :uploadedFilename="uploadedFilename" />
+  <EmailViewer v-else :emails="parsedEmails" :uploadedFilename="uploadedFilename" @resetEmails="resetViewer" />
 </template>

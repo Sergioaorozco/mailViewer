@@ -58,6 +58,7 @@ const donwloadAttachment = ( attachment) => {
       </span>
     </div>
     <button
+      @click="$emit('reset-emails')"
       class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"><svg
         xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-upload w-4 h-4"
@@ -85,12 +86,12 @@ const donwloadAttachment = ( attachment) => {
         </div>
         <ul class="flex-1 overflow-y-auto">
           <li v-for="email in emails" :key="email.subject + email.date" @click="selectedEmail = email"
-            class="bg-white hover:bg-zinc-100 px-3 py-2 min-h-20 border-b border-zinc-300 last:border-none">
+            class="bg-white hover:bg-zinc-100 px-3 py-2 min-h-20 border-b border-zinc-300 last:border-none cursor-pointer">
             <div class="flex justify-between items-start gap-x-3">
               <div class="flex gap-x-2">
-                <p class="p-3 rounded-full size-10 flex justify-center items-center bg-zinc-200">SA</p>
+                <p class="p-3 rounded-full size-10 flex justify-center items-center bg-zinc-200">{{email.initialChars}}</p>
                 <span class="flex flex-col">
-                  <p class="font-semibold"> {{ email.from }}</p>
+                  <p class="font-semibold"> {{ email.fromName }}</p>
                   <p class="text-zinc-600 text-sm overflow-ellipsis"> {{ email.subject }}</p>
                 </span>
               </div>
@@ -112,12 +113,12 @@ const donwloadAttachment = ( attachment) => {
         <div class="border-b border-zinc-200 px-4 pt-4 pb-8 bg-white" v-if="selectedEmail.subject">
           <p class="text-xl font-semibold">{{ selectedEmail.subject }}</p>
           <div class="flex items-start gap-x-3 mt-2">
-            <p class="p-3 rounded-full size-10 flex justify-center items-center bg-zinc-200 mt-1">SA</p>
+            <p class="p-3 rounded-full size-10 flex justify-center items-center bg-zinc-200 mt-1">{{selectedEmail.initialChars}}</p>
             <div class="flex-col w-full">
               <div class="flex justify-between items-start w-full">
                 <span>
-                  <p>From: {{ selectedEmail.from }}</p>
-                  <p class="text-zinc-500">{{ selectedEmail.to }}</p>
+                  <p>{{ selectedEmail.fromName }}</p>
+                  <p class="text-zinc-500">{{ selectedEmail.fromAddress }}</p>
                 </span>
                 <div class="flex items-center self-start gap-1 text-sm text-zinc-500"><svg xmlns="http://www.w3.org/2000/svg"
                     width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
