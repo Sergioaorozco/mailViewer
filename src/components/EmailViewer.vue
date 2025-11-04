@@ -142,7 +142,7 @@ const formatDate = (date)  =>{
                 <p :class="[selectedEmail.emailID === email.emailID ? 'bg-yellow-300 group-hover:bg-yellow-400': 'bg-zinc-200','p-3 rounded-full aspect-square size-10 flex justify-center items-center']">{{email.initialChars}}
                 </p>
                 <span class="flex flex-col">
-                  <p class="font-semibold"> {{ email.fromName }}</p>
+                  <p class="font-semibold flex gap-x-2 items-center"> {{ email.fromName }} <span v-if="email.attachments.length > 0" class=" w-fit flex text-xs text-zinc-600/50"><PaperClipIcon /></span></p>
                   <p class="text-zinc-600 text-sm overflow-ellipsis"> {{ email.subject }}</p>
                 </span>
               </div>
