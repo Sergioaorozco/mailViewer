@@ -9,6 +9,7 @@ const error = ref(null);
 const isDragging = ref(false);
 const hasEmails = computed(() => parsedEmails.value.length > 0);
 const uploadedFilename = ref(null);
+const isLoading = ref(false);
 
 // ✅ Always convert to Uint8Array before parsing
 const parseEmailChunk = async (raw) => {
@@ -62,6 +63,7 @@ const handleUpload = async (files) => {
   parsedEmails.value = []
 
   try {
+    isLoading.value = true;
     const reader = new FileReader()
     const chunkSize = 1024 * 1024 // 1MB chunks
     let offset = 0
@@ -100,11 +102,15 @@ const handleUpload = async (files) => {
         if (email) {
           parsedEmails.value.push(mapEmailData(email))
         }
+        isLoading.value = false;
+      } else {
+        isLoading.value = false;
       }
     }
 
     reader.onerror = () => {
       error.value = 'Error reading file'
+      isLoading.value = false;
     }
 
     const readNextChunk = () => {
@@ -116,6 +122,7 @@ const handleUpload = async (files) => {
     readNextChunk()
   } catch (err) {
     error.value = 'Error processing file: ' + err.message
+    isLoading.value = false;
     console.error('File processing error:', err)
   }
 }
@@ -130,6 +137,7 @@ const handleDrop = (e) => {
 const resetViewer = () => {
   parsedEmails.value = []
   uploadedFilename.value = null
+  isLoading.value = false;
 }
 </script>
 
@@ -193,5 +201,5 @@ const resetViewer = () => {
       </div>
     </section>
   </main>
-  <EmailViewer v-else :emails="parsedEmails" :uploadedFilename="uploadedFilename" @resetEmails="resetViewer" />
+  <EmailViewer v-else :isLoading="isLoading" :emails="parsedEmails" :uploadedFilename="uploadedFilename" @resetEmails="resetViewer" />
 </template>
