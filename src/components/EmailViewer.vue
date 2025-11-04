@@ -139,7 +139,7 @@ const formatDate = (date)  =>{
           >
             <div class="flex justify-between items-start gap-x-3">
               <div class="flex gap-x-2">
-                <p :class="[selectedEmail.emailID === email.emailID ? 'bg-yellow-200 group-hover:bg-yellow-400': 'bg-zinc-200','p-3 rounded-full size-10 flex justify-center items-center']">{{email.initialChars}}
+                <p :class="[selectedEmail.emailID === email.emailID ? 'bg-yellow-300 group-hover:bg-yellow-400': 'bg-zinc-200','p-3 rounded-full size-10 flex justify-center items-center']">{{email.initialChars}}
                 </p>
                 <span class="flex flex-col">
                   <p class="font-semibold"> {{ email.fromName }}</p>
