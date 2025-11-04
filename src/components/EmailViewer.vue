@@ -3,6 +3,7 @@
 import { computed, ref } from 'vue';
 import { Mail } from 'lucide-vue-next';
 import PaperClipIcon from '../assets/PaperClipIcon.vue';
+import { filter } from '@primeuix/themes/aura/datatable';
 
 // Props
 const props = defineProps({
@@ -26,6 +27,10 @@ const selectedEmail = ref({})
 const filterText = defineModel();
 
 // Methods
+const clearFilter = () => {
+  filterText.value = '';
+}
+
 const donwloadAttachment = ( attachment) => {
   try {
     const blob = new Blob([attachment.content], { type: attachment.mimeType});
@@ -69,8 +74,7 @@ const showFilteredEmails = computed(() => {
         <h2 class="text-zinc-600 font-light">{{ uploadedFilename }}</h2>
       </span>
     </div>
-    <button
-      @click="$emit('reset-emails')"
+    <button @click="$emit('reset-emails')"
       class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"><svg
         xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-upload w-4 h-4"
@@ -85,35 +89,52 @@ const showFilteredEmails = computed(() => {
     <div class="flex gap-x-3 h-[calc(100vh-120px)]">
       <article class="w-1/3 flex flex-col rounded-lg border border-zinc-300">
         <div class="border-b border-zinc-200">
-          <div class="relative"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          <div class="relative">
+            <svg v-if="!filterText" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
               class="lucide lucide-search absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground"
               aria-hidden="true">
               <path d="m21 21-4.34-4.34"></path>
               <circle cx="11" cy="11" r="8"></circle>
             </svg>
+            <svg v-else @click="clearFilter" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="icon icon-tabler icons-tabler-outline icon-tabler-x absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 cursor-pointer">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M18 6l-12 12" />
+              <path d="M6 6l12 12" />
+            </svg>
             <input
               class="flex h-16 w-full rounded-md px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-10 pr-10"
-              placeholder="Buscar emails..."
-              v-model="filterText"
-            >
+              placeholder="Buscar emails..." v-model="filterText">
           </div>
         </div>
         <ul class="flex-1 overflow-y-auto">
+          <li v-if="!showFilteredEmails.length" class="px-3 py-4 bg-yellow-100 flex gap-x-2 items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-circle-alert w-5 h-5 text-zinc-800 mt-0.5 flex-shrink-0" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" x2="12" y1="8" y2="12"></line>
+              <line x1="12" x2="12.01" y1="16" y2="16"></line>
+            </svg>
+            No se encontraron emails que coincidan con "{{ filterText }}"
+          </li>
           <li v-for="email in showFilteredEmails" :key="email.subject + email.date" @click="selectedEmail = email"
             class="bg-white hover:bg-zinc-100 px-3 py-2 min-h-20 border-b border-zinc-300 last:border-none cursor-pointer">
             <div class="flex justify-between items-start gap-x-3">
               <div class="flex gap-x-2">
-                <p class="p-3 rounded-full size-10 flex justify-center items-center bg-zinc-200">{{email.initialChars}}</p>
+                <p class="p-3 rounded-full size-10 flex justify-center items-center bg-zinc-200">{{email.initialChars}}
+                </p>
                 <span class="flex flex-col">
                   <p class="font-semibold"> {{ email.fromName }}</p>
                   <p class="text-zinc-600 text-sm overflow-ellipsis"> {{ email.subject }}</p>
                 </span>
               </div>
-              <div class="flex items-center gap-1 text-xs text-zinc-500 whitespace-nowrap"><svg xmlns="http://www.w3.org/2000/svg"
-                  width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                  stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar w-4 h-4"
-                  aria-hidden="true">
+              <div class="flex items-center gap-1 text-xs text-zinc-500 whitespace-nowrap"><svg
+                  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-calendar w-4 h-4" aria-hidden="true">
                   <path d="M8 2v4"></path>
                   <path d="M16 2v4"></path>
                   <rect width="18" height="18" x="3" y="4" rx="2"></rect>
@@ -128,17 +149,18 @@ const showFilteredEmails = computed(() => {
         <div class="border-b border-zinc-200 px-4 pt-4 pb-8 bg-white" v-if="selectedEmail.subject">
           <p class="text-xl font-semibold">{{ selectedEmail.subject }}</p>
           <div class="flex items-start gap-x-3 mt-2">
-            <p class="p-3 rounded-full size-10 flex justify-center items-center bg-zinc-200 mt-1">{{selectedEmail.initialChars}}</p>
+            <p class="p-3 rounded-full size-10 flex justify-center items-center bg-zinc-200 mt-1">
+              {{selectedEmail.initialChars}}</p>
             <div class="flex-col w-full">
               <div class="flex justify-between items-start w-full">
                 <span>
                   <p>{{ selectedEmail.fromName }}</p>
                   <p class="text-zinc-500">{{ selectedEmail.fromAddress }}</p>
                 </span>
-                <div class="flex items-center self-start gap-1 text-sm text-zinc-500"><svg xmlns="http://www.w3.org/2000/svg"
-                    width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar w-4 h-4"
-                    aria-hidden="true">
+                <div class="flex items-center self-start gap-1 text-sm text-zinc-500"><svg
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-calendar w-4 h-4" aria-hidden="true">
                     <path d="M8 2v4"></path>
                     <path d="M16 2v4"></path>
                     <rect width="18" height="18" x="3" y="4" rx="2"></rect>
