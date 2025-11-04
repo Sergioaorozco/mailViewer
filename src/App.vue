@@ -61,18 +61,62 @@ const handleUpload = async (files) => {
   uploadedFilename.value = file.name
   parsedEmails.value = []
 
-  const text = await file.text()
-  const parts = text.split(/\r?\nFrom\s/)
+  try {
+    const reader = new FileReader()
+    const chunkSize = 1024 * 1024 // 1MB chunks
+    let offset = 0
+    let buffer = ''
 
-  for (const raw of parts) {
-    const trimmed = raw?.trim?.()
-    if (!trimmed) continue
+    reader.onload = async (e) => {
+      const chunk = e.target.result
+      buffer += chunk
 
-    const emailText = `From ${trimmed}`
-    const email = await parseEmailChunk(emailText)
-    if (!email) continue;
+      // Find complete email boundaries
+      const emailBoundaries = buffer.split(/\r?\nFrom\s/)
+      
+      // Process all complete emails except the last one (might be incomplete)
+      for (let i = 0; i < emailBoundaries.length - 1; i++) {
+        const trimmed = emailBoundaries[i]?.trim?.()
+        if (!trimmed) continue
 
-    parsedEmails.value.push(mapEmailData(email))
+        const emailText = `From ${trimmed}`
+        const email = await parseEmailChunk(emailText)
+        if (!email) continue
+
+        parsedEmails.value.push(mapEmailData(email))
+      }
+
+      // Keep the last (potentially incomplete) email in the buffer
+      buffer = emailBoundaries[emailBoundaries.length - 1]
+
+      // Continue reading if there's more
+      offset += chunkSize
+      if (offset < file.size) {
+        readNextChunk()
+      } else if (buffer.trim()) {
+        // Process the final chunk
+        const emailText = `From ${buffer.trim()}`
+        const email = await parseEmailChunk(emailText)
+        if (email) {
+          parsedEmails.value.push(mapEmailData(email))
+        }
+      }
+    }
+
+    reader.onerror = () => {
+      error.value = 'Error reading file'
+    }
+
+    const readNextChunk = () => {
+      const blob = file.slice(offset, offset + chunkSize)
+      reader.readAsText(blob)
+    }
+
+    // Start reading
+    readNextChunk()
+  } catch (err) {
+    error.value = 'Error processing file: ' + err.message
+    console.error('File processing error:', err)
   }
 }
 
